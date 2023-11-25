@@ -34,46 +34,52 @@ app.get("/valid/:word", async (req, res) => {
       "SELECT * FROM words WHERE word = $1",
       [word]
     );
-    if (validWord.rows.length == 0) res.status(404).json({ exists: false });
-    else res.status(200).json({ exists: true });
+    if (validWord.rows.length == 0)
+      res.status(404).json({ error: "Word not found in dictionary" });
+    res.status(200).json({ word: validWord.rows[0].word });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
 app.get("/check/:word", async (req, res) => {
-    try {
-      const word = req.params.word;
-      console.log("Rota: check/" + word);
-      const result = await client.query(
-        "SELECT * FROM daily_word"
-      );
-      let dailyWord = null;
-      if (result.rows.length > 0) {
-        dailyWord = result.rows[0].word;
-      }
-      console.log (dailyWord);
-
-      let results = [];
-      for (let i = 0; i < word.length; i++) {
-        const charWord = word[i];
-        const charDailyWord = dailyWord[i];
-        console.log(charWord + "-" + charDailyWord)
-    
-        if (charWord === charDailyWord) {
-          results.push('verde');
-        } else if (dailyWord.includes(charWord)) {
-          results.push('amarelo');
-        } else {
-          results.push('branco');
-        }
-      } 
-      res.status(200).json({ results });
-
-    } catch (error) {
-      console.log(error);
+  try {
+    const word = req.params.word;
+    console.log("Rota: check/" + word);
+    const dailyWordResult = await client.query("SELECT * FROM daily_word");
+    let dailyWord = null;
+    if (dailyWordResult.rows.length > 0) {
+      dailyWord = dailyWordResult.rows[0].word;
     }
-  });
+
+    let results = {};
+    for (let i = 0; i < word.length; i++) {
+      const charWord = word[i];
+      const charDailyWord = dailyWord[i];
+      if (charWord === charDailyWord) {
+        results[i] = "correct";
+        dailyWord = dailyWord.substring(0, i) + dailyWord.substring(i + 1);
+      } else if(!dailyWord.includes(charWord)){
+        results[i] = "wrong";
+      }else results[i] = null;
+    }
+    for (let i = 0; i < word.length; i++) {
+      const charWord = word[i];
+      if (results[i] === null) {
+        if(dailyWord.includes(charWord)){
+          results[i] = "misplaced";
+          charIndex = dailyWord.indexOf(charWord);
+          dailyWord = dailyWord.substring(0, charIndex) + dailyWord.substring(charIndex + 1);
+        }else results[i] = "wrong";
+      }
+    }
+
+    res.status(200).json({results });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.listen(config.port, () =>
   console.log("Servidor funcionando na porta " + config.port)
