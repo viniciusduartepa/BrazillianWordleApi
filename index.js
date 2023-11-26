@@ -1,80 +1,11 @@
 const express = require("express");
-const { Client } = require("pg");
-const bodyparser = require("body-parser");
+const wordRouter = require("./routes/word");
 const config = require("./config");
 
 const app = express();
 app.use(express.json());
-app.use(bodyparser.json());
+app.use("/", wordRouter);
 
-var conString = config.urlConnection;
-var client = new Client(conString);
-client.connect(function (err) {
-  if (err) {
-    return console.error("Não foi possível conectar ao banco.", err);
-  }
-  client.query("SELECT NOW()", function (err, result) {
-    if (err) {
-      return console.error("Erro ao executar a query.", err);
-    }
-    console.log(result.rows[0]);
-  });
+app.listen(config.port, () => {
+ console.log(`Server running on port ${config.port}`);
 });
-
-app.get("/", (req, res) => {
-  console.log("Response ok.");
-  res.send("Ok - Servidor disponível.");
-});
-
-app.get("/valid/:word", async (req, res) => {
-  try {
-    const word = req.params.word;
-    console.log("Rota: valid/" + word);
-    const validWord = await client.query(
-      "SELECT * FROM words WHERE word = $1",
-      [word]
-    );
-    if (validWord.rows.length == 0)
-      res.status(404).json({ error: "Word not found in dictionary" });
-
-    const dailyWordResult = await client.query("SELECT * FROM daily_word");
-    let dailyWord = null;
-    if (dailyWordResult.rows.length > 0) {
-      dailyWord = dailyWordResult.rows[0].word;
-    }
-    let missingLetters = dailyWord;
-
-    let results = {};
-    for (let i = 0; i < word.length; i++) {
-      const charWord = word[i];
-      const charDailyWord = dailyWord[i];
-      if (charWord === charDailyWord) {
-        results[i] = "correct";
-        missingLetters = missingLetters.substring(0, i) + missingLetters.substring(i + 1);
-      } else if (!dailyWord.includes(charWord)) {
-        results[i] = "wrong";
-      } else results[i] = null;
-    }
-    for (let i = 0; i < word.length; i++) {
-      const charWord = word[i];
-      if (results[i] === null) {
-        if (missingLetters.includes(charWord)) {
-          results[i] = "misplaced";
-          charIndex = missingLetters.indexOf(charWord);
-          missingLetters =
-            missingLetters.substring(0, charIndex) +
-            missingLetters.substring(charIndex + 1);
-        } else results[i] = "wrong";
-      }
-    }
-    res.status(200).json({ results });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-app.listen(config.port, () =>
-  console.log("Servidor funcionando na porta " + config.port)
-);
-
-module.exports = app;
