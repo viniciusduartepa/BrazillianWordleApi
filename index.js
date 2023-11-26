@@ -58,7 +58,7 @@ app.get("/valid/:word", async (req, res) => {
     for (let i = 0; i < word.length; i++) {
       const charWord = word[i];
       if (results[i] === null) {
-        if (dailyWord.includes(charWord)) {
+        if (missingLetters.includes(charWord)) {
           results[i] = "misplaced";
           charIndex = missingLetters.indexOf(charWord);
           missingLetters =
