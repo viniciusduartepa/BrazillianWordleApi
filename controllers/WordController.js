@@ -1,5 +1,6 @@
 const Word = require("../models/Words");
 const DailyWord = require("../models/DailyWord");
+const RandomWord = require("../models/RandomWords")
 
 class WordController {
  static async validate(req, res) {
@@ -44,6 +45,20 @@ class WordController {
       res.status(500).json({ error: "Server error" });
     }
  }
+
+ static async resetDailyWord(req, res) {
+  try {
+    console.log("Execute: reset-daily-word");
+    
+    const randomWord = await RandomWord.getRandomWord();
+    await DailyWord.deleteDailyWord();
+    await DailyWord.setDailyWord(randomWord);
+    res.status(200).json({ newDailyWord: randomWord });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
 }
 
-module.exports = WordController;
+module.exports = WordController; 
