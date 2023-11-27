@@ -18,6 +18,7 @@ client.connect(function (err) {
 class DailyWord {
   static async getDailyWord() {
     const dailyWordResult = await client.query("SELECT * FROM daily_word");
+    client.end();
     return dailyWordResult.rows.length > 0
       ? dailyWordResult.rows[0].word
       : null;
@@ -28,6 +29,7 @@ class DailyWord {
         "UPDATE daily_word SET word = $1;",
         [word]
       );
+      client.end();
     } catch (err) {
       console.error("Error while reseting daily word:", err);
     }
