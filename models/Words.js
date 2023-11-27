@@ -21,7 +21,6 @@ class Words {
       "SELECT * FROM words WHERE word = $1",
       [word]
     );
-    client.end();
     return validWord.rows.length > 0;
  }
 }
