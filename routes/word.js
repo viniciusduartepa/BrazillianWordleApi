@@ -3,6 +3,6 @@ const router = express.Router();
 const WordController = require("../controllers/WordController");
 
 router.get("/valid/:word", WordController.validate);
-router.post("/update-daily-word", WordController.resetDailyWord);
+router.put("/update-daily-word", WordController.resetDailyWord);
 
 module.exports = router;
