@@ -22,21 +22,15 @@ class DailyWord {
       ? dailyWordResult.rows[0].word
       : null;
   }
-  static async deleteDailyWord() {
+  static async resetDailyWord(word) {
     try {
       await client.query("DELETE FROM daily_word");
-    } catch (error) {
-      console.error("Error while deleting daily word: ", error);
-    }
-  }
-  static async setDailyWord(word) {
-    try {
-      const insertResult = await client.query(
+      await client.query(
         "INSERT INTO daily_word(word) VALUES($1)",
         [word]
       );
     } catch (err) {
-      console.error("Error while inserting daily word:", err);
+      console.error("Error while reseting daily word:", err);
     }
   }
 }

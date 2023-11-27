@@ -51,8 +51,7 @@ class WordController {
     console.log("Execute: reset-daily-word");
     
     const randomWord = await RandomWord.getRandomWord();
-    await DailyWord.deleteDailyWord();
-    await DailyWord.setDailyWord(randomWord);
+    await DailyWord.resetDailyWord(randomWord);
     res.status(200).json({ newDailyWord: randomWord });
   } catch (error) {
     console.log(error);
