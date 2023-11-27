@@ -22,11 +22,10 @@ class DailyWord {
       ? dailyWordResult.rows[0].word
       : null;
   }
-  static async resetDailyWord(word) {
+  static async updateDailyWord(word) {
     try {
-      await client.query("DELETE FROM daily_word");
       await client.query(
-        "INSERT INTO daily_word(word) VALUES($1)",
+        "UPDATE daily_word SET word = $1;",
         [word]
       );
     } catch (err) {

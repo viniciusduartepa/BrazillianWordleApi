@@ -48,10 +48,10 @@ class WordController {
 
  static async resetDailyWord(req, res) {
   try {
-    console.log("Execute: reset-daily-word");
+    console.log("Execute: update-daily-word");
     
     const randomWord = await RandomWord.getRandomWord();
-    await DailyWord.resetDailyWord(randomWord);
+    await DailyWord.updateDailyWord(randomWord);
     res.status(200).json({ newDailyWord: randomWord });
   } catch (error) {
     console.log(error);
