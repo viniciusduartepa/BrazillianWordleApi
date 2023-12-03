@@ -10,7 +10,7 @@ class WordController {
 
       const isValidWord = await Word.validate(word);
       if (!isValidWord) {
-        return res.status(202).json({ error: "Word not found in dictionary" });
+        return res.status(400).json({ error: "Word not found in dictionary" });
       }
 
       const dailyWord = await DailyWord.getDailyWord();
