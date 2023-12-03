@@ -22,7 +22,10 @@ class WordController {
         const charDailyWord = dailyWord[i];
         if (charWord === charDailyWord) {
           results[i] = "correct";
-          missingLetters = missingLetters.substring(0, i) + missingLetters.substring(i + 1);
+          const charIndex = missingLetters.indexOf(charWord);
+            missingLetters =
+              missingLetters.substring(0, charIndex) +
+              missingLetters.substring(charIndex + 1);
         } else if (!dailyWord.includes(charWord)) {
           results[i] = "wrong";
         } else results[i] = null;
