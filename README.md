@@ -11,8 +11,9 @@ https://brazillian-wordle-api.vercel.app/
 
 ## rotas
 
-GET https://brazillian-wordle-api.vercel.app/valid/:word - Valida uma palavra.
-POST https://brazillian-wordle-api.vercel.app/update-daily-word - Altera a palavra diária.
+`GET https://brazillian-wordle-api.vercel.app/valid/:word - Valida uma palavra.`
+
+`POST https://brazillian-wordle-api.vercel.app/update-daily-word - Altera a palavra diária.`
 
 ## Exemplos
 
